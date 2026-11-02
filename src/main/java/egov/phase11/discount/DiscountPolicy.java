@@ -8,8 +8,7 @@ public class DiscountPolicy {
 
     public int calculate(int amount, Grade grade) {
 
-        if(grade == null) throw new IllegalArgumentException("등급은 반드시 필요합니다.");
-        if(amount < 0) throw new IllegalArgumentException("금액은 0 이상이어야 합니다.");
+        validate(amount, grade);
 
         int totalDiscount = 0;
 
@@ -17,5 +16,10 @@ public class DiscountPolicy {
         if(amount >= DISCOUNT_THRESHOLD) totalDiscount += BASIC_DISCOUNT_PERCENT;
 
         return amount * (100 - totalDiscount) / 100;
+    }
+
+    private void validate(int amount, Grade grade) {
+        if(grade == null) throw new IllegalArgumentException("등급은 반드시 필요합니다.");
+        if(amount < 0) throw new IllegalArgumentException("금액은 0 이상이어야 합니다.");
     }
 }
