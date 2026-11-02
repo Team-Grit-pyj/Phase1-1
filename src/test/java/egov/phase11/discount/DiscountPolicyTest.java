@@ -35,4 +35,17 @@ class DiscountPolicyTest {
         // Then
         assertThat(result).isEqualTo(5_000);
     }
+
+    @Test
+    @DisplayName("일반등급 10만원 이상이면 10% 할인.")
+    void normal_100000_discount() {
+        // Given
+        int amount = 100_000;
+
+        // When
+        int result = policy.calculate(amount, Grade.NORMAL);
+
+        // Then
+        assertThat(result).isEqualTo(90_000);
+    }
 }
