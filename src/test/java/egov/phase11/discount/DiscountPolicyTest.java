@@ -48,4 +48,17 @@ class DiscountPolicyTest {
         // Then
         assertThat(result).isEqualTo(90_000);
     }
+
+    @Test
+    @DisplayName("일반등급 99,999원 결제시 할인없음")
+    void normal_99999_no_discount(){
+        // Given
+        int amount = 99_999;
+
+        // When
+        int result = policy.calculate(amount, Grade.NORMAL);
+
+        // Then
+        assertThat(result).isEqualTo(99_999);
+    }
 }
