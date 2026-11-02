@@ -113,4 +113,16 @@ class DiscountPolicyTest {
         // Then
         assertThat(result).isEqualTo(0);
     }
+
+    @Test
+    @DisplayName("Grade 가 null이면 예외 발생")
+    void null_grade_throws_exception() {
+        // Given
+        int amount = 100_000;
+
+        // When & Then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> policy.calculate(amount, null))
+                .withMessageContaining("등급");
+    }
 }
