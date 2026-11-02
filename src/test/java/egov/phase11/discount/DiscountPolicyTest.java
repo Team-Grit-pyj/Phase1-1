@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 
 class DiscountPolicyTest {
@@ -86,5 +87,17 @@ class DiscountPolicyTest {
 
         // Then
         assertThat(result).isEqualTo(85_000);
+    }
+
+    @Test
+    @DisplayName("음수 금액이면 예외 발생")
+    void negative_amount_throws_exception() {
+        // Given
+        int amount = -1;
+
+        // When & Then
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> policy.calculate(amount, Grade.NORMAL))
+                .withMessageContaining("금액");
     }
 }
