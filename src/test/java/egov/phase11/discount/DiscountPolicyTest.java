@@ -100,4 +100,17 @@ class DiscountPolicyTest {
                 .isThrownBy(() -> policy.calculate(amount, Grade.NORMAL))
                 .withMessageContaining("금액");
     }
+
+    @Test
+    @DisplayName("0원이면 예외발생 안함")
+    void zero_amount_no_exception() {
+        // Given
+        int amount = 0;
+
+        // When
+        int result = policy.calculate(amount, Grade.NORMAL);
+
+        // Then
+        assertThat(result).isEqualTo(0);
+    }
 }
