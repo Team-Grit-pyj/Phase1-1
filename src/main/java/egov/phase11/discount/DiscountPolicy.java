@@ -4,11 +4,11 @@ public class DiscountPolicy {
 
     public int calculate(int amount, Grade grade) {
 
-        if(grade == Grade.VIP) {
+        if(grade == Grade.VIP && amount >= 100_000) {
+            return amount * 85 / 100;
+        }else if (grade == Grade.VIP) {
             return amount * 95 / 100;
-        }
-
-        if(amount >= 100_000){
+        }else if(amount >= 100_000) {
             return amount * 90 / 100;
         }
         return amount;
