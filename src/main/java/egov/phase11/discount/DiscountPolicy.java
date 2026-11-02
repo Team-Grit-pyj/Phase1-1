@@ -4,6 +4,8 @@ public class DiscountPolicy {
 
     public int calculate(int amount, Grade grade) {
 
+        if(amount < 0) throw new IllegalArgumentException("금액은 0 이상이어야 합니다.");
+
         if(grade == Grade.VIP && amount >= 100_000) {
             return amount * 85 / 100;
         }else if (grade == Grade.VIP) {
