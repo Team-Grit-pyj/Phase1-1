@@ -61,4 +61,17 @@ class DiscountPolicyTest {
         // Then
         assertThat(result).isEqualTo(99_999);
     }
+
+    @Test
+    @DisplayName("VIP 등급 10만원 미만 5% 할인")
+    void vip_under_threshold_5_discount() {
+        // Given
+        int amount = 10_000;
+
+        // When
+        int result = policy.calculate(amount, Grade.VIP);
+
+        // Then
+        assertThat(result).isEqualTo(9_500);
+    }
 }
