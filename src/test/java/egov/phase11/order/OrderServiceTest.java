@@ -96,4 +96,20 @@ class OrderServiceTest {
         verify(paymentGateway, never()).pay(anyLong(), anyInt());
         verify(orderRepository, never()).save(any(Order.class));
     }
+
+    @Test
+    @DisplayName("재고와 같은 수량을 주문하면 정상적으로 결제 후 저장한다")
+    void order_exactly_stock() {
+        // Given: 경계값 - 재고 3개, 주문 3개 (15만원 -> 10% 할인 -> 135,000원)
+        Item item = new Item(1L, 50_000, 3);
+        given(itemRepository.findById(ITEM_ID)).willReturn(Optional.of(item));
+        given(paymentGateway.pay(MEMBER_ID, 135_000)).willReturn(true);
+
+        // When
+        orderService.placeOrder(MEMBER_ID, new OrderRequest(ITEM_ID, 3), Grade.NORMAL);
+
+        // Then
+        verify(paymentGateway).pay(MEMBER_ID, 135_000);
+        verify(orderRepository).save(any(Order.class));
+    }
 }
