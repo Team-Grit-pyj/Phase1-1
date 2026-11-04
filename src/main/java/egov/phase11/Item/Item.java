@@ -21,7 +21,13 @@ public class Item {
 
     private int price;
 
-    private int quantity;
+    private int stock;
+
+    public void itemValidateStock(int orderStock) {
+        if(stock < orderStock){
+            throw new IllegalStateException("Insufficient stock");
+        }
+    }
 
 
 }

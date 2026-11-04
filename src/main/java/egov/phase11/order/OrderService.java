@@ -26,6 +26,8 @@ public class OrderService {
         Item item = itemRepository.findById(request.getItemId())
                 .orElseThrow(() -> new IllegalStateException("Item not found"));
 
+        item.itemValidateStock(request.getOrderStock());
+
         int amount = discountPolicy.calculate(item.getPrice() * request.getOrderStock(), grade);
 
         boolean paySuccess = paymentGateway.pay(memberId, amount);
