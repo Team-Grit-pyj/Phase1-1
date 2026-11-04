@@ -1,4 +1,4 @@
-package egov.phase11.Order;
+package egov.phase11.order;
 
 public class OrderRequest {
 

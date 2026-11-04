@@ -1,4 +1,4 @@
-package egov.phase11.Order;
+package egov.phase11.order;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
