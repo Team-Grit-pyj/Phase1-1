@@ -30,16 +30,10 @@ public class OrderService {
 
         int amount = discountPolicy.calculate(item.getPrice() * request.getOrderStock(), grade);
 
-        boolean paySuccess = paymentGateway.pay(memberId, amount);
-
-        Order order = new Order(memberId, amount);
-
-        if (paySuccess) {
-            orderRepository.save(order);
-        }else {
+        if (!paymentGateway.pay(memberId, amount)) {
             throw new IllegalStateException("Payment failed");
         }
 
-        return order;
+        return orderRepository.save(new Order(memberId, amount));
     }
 }
