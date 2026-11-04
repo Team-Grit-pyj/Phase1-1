@@ -80,4 +80,20 @@ class OrderServiceTest {
 
         verify(orderRepository, never()).save(any(Order.class));
     }
+
+    @Test
+    @DisplayName("재고보다 많이 주문하면 예외가 발생하고 결제와 저장은 일어나지 않는다")
+    void order_over_stock_throws_exception() {
+        // Given: 경계값 - 재고 3개, 주문 4개
+        Item item = new Item(1L, 50_000, 3);
+        given(itemRepository.findById(ITEM_ID)).willReturn(Optional.of(item));
+
+        // When & Then
+        assertThatIllegalStateException()
+                .isThrownBy(() -> orderService.placeOrder(MEMBER_ID, new OrderRequest(ITEM_ID, 4), Grade.NORMAL))
+                .withMessageContaining("Insufficient stock");
+
+        verify(paymentGateway, never()).pay(anyLong(), anyInt());
+        verify(orderRepository, never()).save(any(Order.class));
+    }
 }
