@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -126,5 +127,22 @@ class OrderServiceTest {
         // Then
         verify(paymentGateway).pay(MEMBER_ID, 135_000);
         verify(orderRepository).save(any(Order.class));
+    }
+
+    @Test
+    @DisplayName("주문이 성공하면 저장소가 반환한 주문을 그대로 반환한다")
+    void returns_saved_order() {
+        // Given
+        Item item = new Item(1L, 50_000, 10);
+        Order savedOrder = new Order(MEMBER_ID, 135_000);
+        given(itemRepository.findById(ITEM_ID)).willReturn(Optional.of(item));
+        given(paymentGateway.pay(MEMBER_ID, 135_000)).willReturn(true);
+        given(orderRepository.save(any(Order.class))).willReturn(savedOrder);
+
+        // When
+        Order result = orderService.placeOrder(MEMBER_ID, new OrderRequest(ITEM_ID, 3), Grade.NORMAL);
+
+        // Then
+        assertThat(result).isSameAs(savedOrder);
     }
 }
