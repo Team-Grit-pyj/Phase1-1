@@ -98,6 +98,21 @@ class OrderServiceTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 상품을 주문하면 예외가 발생하고 결제와 저장은 일어나지 않는다")
+    void order_item_not_found_throws_exception() {
+        // Given
+        given(itemRepository.findById(ITEM_ID)).willReturn(Optional.empty());
+
+        // When & Then
+        assertThatIllegalStateException()
+                .isThrownBy(() -> orderService.placeOrder(MEMBER_ID, new OrderRequest(ITEM_ID, 3), Grade.NORMAL))
+                .withMessageContaining("Item not found");
+
+        verify(paymentGateway, never()).pay(anyLong(), anyInt());
+        verify(orderRepository, never()).save(any(Order.class));
+    }
+
+    @Test
     @DisplayName("재고와 같은 수량을 주문하면 정상적으로 결제 후 저장한다")
     void order_exactly_stock() {
         // Given: 경계값 - 재고 3개, 주문 3개 (15만원 -> 10% 할인 -> 135,000원)
