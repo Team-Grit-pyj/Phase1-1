@@ -1,5 +1,6 @@
 package egov.phase11.Order;
 
+import egov.phase11.Item.Item;
 import egov.phase11.Item.ItemRepository;
 import egov.phase11.discount.DiscountPolicy;
 import egov.phase11.discount.Grade;
@@ -22,6 +23,21 @@ public class OrderService {
     }
 
     public Order placeOrder(long memberId, OrderRequest request, Grade grade) {
-        throw new UnsupportedOperationException("아직 구현되지 않았습니다.");
+        Item item = itemRepository.findById(request.getItemId())
+                .orElseThrow(() -> new IllegalStateException("Item not found"));
+
+        int amount = discountPolicy.calculate(item.getPrice() * request.getOrderStock(), grade);
+
+        boolean paySuccess = paymentGateway.pay(memberId, amount);
+
+        Order order = new Order(memberId, amount);
+
+        if (paySuccess) {
+            orderRepository.save(order);
+        }else {
+            throw new IllegalStateException("Payment failed");
+        }
+
+        return order;
     }
 }
