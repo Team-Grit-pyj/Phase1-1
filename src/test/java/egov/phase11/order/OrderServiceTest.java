@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -64,6 +65,25 @@ class OrderServiceTest {
         InOrder inOrder = inOrder(paymentGateway, orderRepository);
         inOrder.verify(paymentGateway).pay(MEMBER_ID, 135_000);
         inOrder.verify(orderRepository).save(any(Order.class));
+    }
+
+    @Test
+    @DisplayName("주문을 저장할 때 회원 ID와 할인이 적용된 결제 금액을 기록한다")
+    void saves_order_with_member_and_discounted_amount() {
+        // Given: 15만원 -> 10% 할인 -> 135,000원
+        Item item = new Item(1L, 50_000, 10);
+        given(itemRepository.findById(ITEM_ID)).willReturn(Optional.of(item));
+        given(paymentGateway.pay(MEMBER_ID, 135_000)).willReturn(true);
+
+        // When
+        orderService.placeOrder(MEMBER_ID, new OrderRequest(ITEM_ID, 3), Grade.NORMAL);
+
+        // Then: save에 넘어간 Order의 내용을 확인
+        ArgumentCaptor<Order> captor = ArgumentCaptor.forClass(Order.class);
+        verify(orderRepository).save(captor.capture());
+
+        assertThat(captor.getValue().getMemberId()).isEqualTo(MEMBER_ID);
+        assertThat(captor.getValue().getPaidAmount()).isEqualTo(135_000);
     }
 
     @Test
