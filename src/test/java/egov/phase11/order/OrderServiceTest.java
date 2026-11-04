@@ -145,4 +145,20 @@ class OrderServiceTest {
         // Then
         assertThat(result).isSameAs(savedOrder);
     }
+
+    @Test
+    @DisplayName("VIP회원이 5만원 제품 2개를 주문하면 15% 할인된 금액으로 결제한다")
+    void vip_order() {
+        // Given: 10만원 -> VIP 5% + 10만원 이상 10% = 15% 할인 -> 85,000원
+        Item item = new Item(1L, 50_000, 10);
+        given(itemRepository.findById(ITEM_ID)).willReturn(Optional.of(item));
+        given(paymentGateway.pay(MEMBER_ID, 85_000)).willReturn(true);
+
+        // When
+        orderService.placeOrder(MEMBER_ID, new OrderRequest(ITEM_ID, 2), Grade.VIP);
+
+        // Then
+        verify(paymentGateway).pay(MEMBER_ID, 85_000);
+        verify(orderRepository).save(any(Order.class));
+    }
 }
